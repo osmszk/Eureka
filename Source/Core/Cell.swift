@@ -120,8 +120,20 @@ open class Cell<T>: BaseCell, TypedCellType where T: Equatable {
      */
     open override func update() {
         super.update()
-        textLabel?.text = row.title
-        textLabel?.textColor = row.isDisabled ? .gray : .black
+        //osuzuki
+        let requireStr = "(必須)"
+        if let title = row.title, title.contains(requireStr) {
+            let str = NSAttributedString(string: title.replacingOccurrences(of: requireStr, with: ""), attributes: nil)
+            let req = NSAttributedString(string: requireStr, attributes: [NSAttributedStringKey.foregroundColor: UIColor.red ])
+            let result = NSMutableAttributedString()
+            result.append(str)
+            result.append(req)
+            textLabel?.attributedText = result
+        } else {
+            textLabel?.text = row.title
+        }
+        //osuzuki
+        //        textLabel?.textColor = row.isDisabled ? .gray : .black
         detailTextLabel?.text = row.displayValueFor?(row.value) ?? (row as? NoValueDisplayTextConformance)?.noValueDisplayText
     }
 

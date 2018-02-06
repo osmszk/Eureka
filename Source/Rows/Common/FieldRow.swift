@@ -233,7 +233,8 @@ open class _FieldCell<T> : Cell<T>, UITextFieldDelegate, TextFieldCell where T: 
             }
         }
         if row.isHighlighted {
-            textLabel?.textColor = tintColor
+            //osuzuki
+//            textLabel?.textColor = tintColor
         }
     }
 

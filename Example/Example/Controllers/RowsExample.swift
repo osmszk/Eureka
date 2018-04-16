@@ -21,9 +21,10 @@ class RowsExampleViewController: FormViewController {
         CheckRow.defaultCellSetup = { cell, row in cell.tintColor = .orange }
         DateRow.defaultRowInitializer = { row in row.minimumDate = Date() }
 
-        form +++
-
-            Section()
+        let prefList = ["北海道","沖縄"]
+        
+        form
+            +++ Section()
 
             <<< LabelRow () {
                 $0.title = "LabelRow"
@@ -184,6 +185,159 @@ class RowsExampleViewController: FormViewController {
                         }
                         cell.detailTextLabel?.text = detailText
                     }
+                    
+        }
+            
+            +++ Section()
+            
+            <<< ActionSheetRow<String>() {
+                $0.title = "性別(必須)"
+                $0.selectorTitle = "性別を選択してください"
+                $0.options = ["男","女"]
+                $0.value = "性別を選択"
+                }
+                .onPresent { from, to in
+                    to.popoverPresentationController?.permittedArrowDirections = .up
+            }
+            
+            <<< DateRow() {
+                $0.title = "生年月日(必須)"
+                $0.value = Date()
+            }
+            
+            +++ Section("氏名")
+            
+            <<< TextRow () {
+                $0.title = "姓(必須)"
+                $0.placeholder = "姓"
+            }
+            <<< TextRow () {
+                $0.title = "名(必須)"
+                $0.placeholder = "名"
+            }
+            <<< TextRow () {
+                $0.title = "姓(カナ)(必須)"
+                $0.placeholder = "姓(カナ)"
+            }
+            <<< TextRow () {
+                $0.title = "名(カナ)(必須)"
+                $0.placeholder = "名(カナ)"
+            }
+            
+            +++ Section("電話番号")
+            
+            <<< TextRow () {
+                $0.title = "携帯電話(必須)"
+                $0.placeholder = "09012345678"
+                }.cellSetup { cell, _  in
+                    cell.textField.keyboardType = .numberPad
+            }
+            <<< TextRow () {
+                $0.title = "固定電話(任意)"
+                $0.placeholder = "0312345678"
+                }.cellSetup { cell, _  in
+                    cell.textField.keyboardType = .numberPad
+            }
+            +++ Section("お住まい")
+            
+            <<< TextRow() {
+                $0.title = "郵便番号(必須)"
+                $0.placeholder = "5671234"
+                }.cellSetup { cell, _  in
+                    cell.textField.keyboardType = .numberPad
+            }
+            <<< PushRow<String>() {
+                $0.title = "都道府県(必須)"
+                $0.options = prefList
+                $0.value = "北海道"
+                $0.selectorTitle = "都道府県を選択してください"
+                }.onPresent { from, to in
+                    to.dismissOnSelection = false
+                    to.dismissOnChange = false
+            }
+            <<< TextRow() {
+                $0.title = "市区町村・丁目(必須)"
+                $0.baseCell.textLabel?.font = UIFont.systemFont(ofSize: 12)
+                $0.placeholder = "住所1"
+            }
+            <<< TextRow() {
+                $0.title = "番地・建物名・部屋番号(必須)"
+                $0.baseCell.textLabel?.font = UIFont.systemFont(ofSize: 11)
+                $0.placeholder = "住所2"
+            }
+            <<< TextRow() {
+                $0.title = "建物名・部屋番号"
+                $0.placeholder = "住所3"
+            }
+            
+            +++ Section("お薬の配送先住所")
+            
+            <<< CheckRow() {
+                $0.title = "上記住所と同じ"
+                $0.value = false
+                $0.tag = "SameAsHome"
+            }
+            <<< TextRow() {
+                $0.title = "郵便番号(必須)"
+                $0.placeholder = "5671234"
+                $0.hidden = .function(["SameAsHome"], { form -> Bool in
+                    let row: RowOf<Bool>! = form.rowBy(tag: "SameAsHome")
+                    if let value = row.value {
+                        return value
+                    }
+                    return true
+                })
+                }.cellSetup { cell, _  in
+                    cell.textField.keyboardType = .numberPad
+            }
+            <<< PushRow<String>() {
+                $0.title = "都道府県(必須)"
+                $0.options = prefList
+                $0.value = "北海道"
+                $0.selectorTitle = "都道府県を選択してください"
+                $0.hidden = .function(["SameAsHome"], { form -> Bool in
+                    let row: RowOf<Bool>! = form.rowBy(tag: "SameAsHome")
+                    if let value = row.value {
+                        return value
+                    }
+                    return true
+                })
+                }.onPresent { from, to in
+                    to.dismissOnSelection = false
+                    to.dismissOnChange = false
+            }
+            <<< TextRow() {
+                $0.title = "市区町村・丁目(必須)"
+                $0.placeholder = "住所1"
+                $0.hidden = .function(["SameAsHome"], { form -> Bool in
+                    let row: RowOf<Bool>! = form.rowBy(tag: "SameAsHome")
+                    if let value = row.value {
+                        return value
+                    }
+                    return true
+                })
+            }
+            <<< TextRow() {
+                $0.title = "番地(必須)"
+                $0.placeholder = "住所2"
+                $0.hidden = .function(["SameAsHome"], { form -> Bool in
+                    let row: RowOf<Bool>! = form.rowBy(tag: "SameAsHome")
+                    if let value = row.value {
+                        return value
+                    }
+                    return true
+                })
+            }
+            <<< TextRow() {
+                $0.title = "建物名・部屋番号(必須)"
+                $0.placeholder = "住所3"
+                $0.hidden = .function(["SameAsHome"], { form -> Bool in
+                    let row: RowOf<Bool>! = form.rowBy(tag: "SameAsHome")
+                    if let value = row.value {
+                        return value
+                    }
+                    return true
+                })
         }
 
 

@@ -30,6 +30,7 @@ import CoreLocation
 
 class HomeViewController : FormViewController {
 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -274,14 +275,16 @@ class RowsExampleViewController: FormViewController {
             }
             <<< TextRow() {
                 $0.title = "市区町村・丁目(必須)"
+                $0.baseCell.textLabel?.font = UIFont.systemFont(ofSize: 12)
                 $0.placeholder = "住所1"
             }
             <<< TextRow() {
-                $0.title = "番地(必須)"
+                $0.title = "番地・建物名・部屋番号(必須)"
+                $0.baseCell.textLabel?.font = UIFont.systemFont(ofSize: 11)
                 $0.placeholder = "住所2"
             }
             <<< TextRow() {
-                $0.title = "建物名・部屋番号(必須)"
+                $0.title = "建物名・部屋番号"
                 $0.placeholder = "住所3"
             }
             

@@ -461,6 +461,7 @@ open class FormViewController: UIViewController, FormViewControllerProtocol, For
         if tableView.dataSource == nil {
             tableView.dataSource = self
         }
+        tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = BaseRow.estimatedRowHeight
         tableView.allowsSelectionDuringEditing = true
     }
@@ -501,7 +502,7 @@ open class FormViewController: UIViewController, FormViewControllerProtocol, For
         NotificationCenter.default.addObserver(self, selector: #selector(FormViewController.keyboardWillShow(_:)), name: Notification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(FormViewController.keyboardWillHide(_:)), name: Notification.Name.UIKeyboardWillHide, object: nil)
 
-        if form.containsMultivaluedSection {
+        if form.containsMultivaluedSection && (isBeingPresented || isMovingToParentViewController) {
             tableView.setEditing(true, animated: false)
         }
     }
@@ -783,7 +784,7 @@ extension FormViewController : UITableViewDelegate {
     }
 
     open func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard tableView == self.tableView else { return tableView.rowHeight }
+        guard tableView == self.tableView else { return tableView.estimatedRowHeight }
         let row = form[indexPath.section][indexPath.row]
         return row.baseCell.height?() ?? tableView.estimatedRowHeight
     }
@@ -906,7 +907,7 @@ extension FormViewController : UITableViewDelegate {
 
     open func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
         guard let section = form[indexPath.section] as? MultivaluedSection else {
-			if form[indexPath].trailingSwipe.actions.count > 0{
+			if form[indexPath].trailingSwipe.actions.count > 0 {
 				return .delete
 			}
             return .none
@@ -935,7 +936,10 @@ extension FormViewController : UITableViewDelegate {
 	}
 
 	public func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]?{
-		return form[indexPath].trailingSwipe.contextualActions as? [UITableViewRowAction]
+        guard let actions = form[indexPath].trailingSwipe.contextualActions as? [UITableViewRowAction], !actions.isEmpty else {
+            return nil
+        }
+        return actions
 	}
 }
 
@@ -1083,10 +1087,10 @@ extension FormViewControllerProtocol {
 
     // MARK: Helpers
 
-    func makeRowVisible(_ row: BaseRow) {
+    func makeRowVisible(_ row: BaseRow, destinationScrollPosition: UITableViewScrollPosition) {
         guard let cell = row.baseCell, let indexPath = row.indexPath, let tableView = tableView else { return }
         if cell.window == nil || (tableView.contentOffset.y + tableView.frame.size.height <= cell.frame.origin.y + cell.frame.size.height) {
-            tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+            tableView.scrollToRow(at: indexPath, at: destinationScrollPosition, animated: true)
         }
     }
 }
